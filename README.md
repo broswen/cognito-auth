@@ -22,7 +22,7 @@ response
 {
   "X-Forwarded-For": "x.x.x.x, x.x.x.x",
   "client_id": "4samh07dmn289m7g94v1itg2pr",
-  "resourcePath": "/",
+  "resourcePath": "/hello",
   "httpMethod": "GET",
   "stage": "dev"
 }
