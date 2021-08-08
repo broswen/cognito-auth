@@ -2,7 +2,7 @@
 
 1. POST with basic auth credentials (app client id and secret) to get access token.
 ```
-POST https://apigateway.restapi.com/stage/token
+POST  https://restapi.execute-api.region.amazonaws.com/dev/token
 ```
 response
 ```json
@@ -15,7 +15,7 @@ response
 
 2. Call protected endpoint with Bearer auth using JWT access token.
 ```
-GET https://apigateway.restapi.com/stage/hello
+GET https://restapi.execute-api.region.amazonaws.com/dev/hello
 ```
 response
 ```json
