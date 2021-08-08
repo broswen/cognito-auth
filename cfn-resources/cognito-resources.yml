@@ -1,0 +1,39 @@
+Resources:
+  # User pool to hold app clients
+  UserPool:
+    Type: AWS::Cognito::UserPool
+
+  # App client that is used to authenticate and call the API
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref UserPool
+      AccessTokenValidity: 2
+      GenerateSecret: true
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - client_credentials
+      # scopes they are allowed to use
+      AllowedOAuthScopes:
+        - !Join ["/", [!Ref UserPoolResourceServer, "hello.get"]]
+      SupportedIdentityProviders:
+        - COGNITO
+
+  # Domain for user pool to authenticate with
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref ApiGatewayRestApi
+      UserPoolId: !Ref UserPool
+
+  # Resource server that holds the scopes
+  UserPoolResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      Identifier: !Ref ApiGatewayRestApi
+      Name: resource-server
+      UserPoolId: !Ref UserPool
+      Scopes:
+        - ScopeDescription: GET /hello
+          ScopeName: hello.get

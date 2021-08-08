@@ -1,0 +1,36 @@
+Resources:
+  # Api gateway cognito user pools authorizer
+  ApiGatewayAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      Name: CognitoAuthorizer
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs:
+        - !GetAtt UserPool.Arn
+
+  # Resource path to proxy to cognito user pool domain
+  TokenResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: token
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # POST method to proxy to cognito user pool domain
+  TokenMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      AuthorizationType: NONE
+      ResourceId: !Ref TokenResource
+      RestApiId: !Ref ApiGatewayRestApi
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: POST
+        RequestParameters:
+          "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
+        Uri: !Sub
+          - "https://${RestApi}.auth.${AWS::Region}.amazoncognito.com/oauth2/token?grant_type=client_credentials"
+          - { RestApi: !Ref ApiGatewayRestApi }
